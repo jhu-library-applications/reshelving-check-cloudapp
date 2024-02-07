@@ -1,34 +1,19 @@
-.entities-radio-group {
-  display: flex;
-  flex-direction: column;
-  margin: 15px 0;
+.actions {
+    padding: 1em;
+    padding-right: 3em;
+    position: sticky; 
+    top: 0;
 }
 
-textarea {
-  padding: 2px;
-  border-width: 1px;
-  $width: calc(100% - 6px);
-  width: $width;
-  max-width: $width;
-  height: 150px;
-  font-family: monospace;
-  display: block;
+.mat-form-field {
+    width: 100% !important;
 }
 
-textarea,
-section,
-.mat-card {
-  margin-bottom: 20px;
+.buttons {
+    display: flex;
+    justify-content: space-between;
 }
 
-pre {
-  overflow: auto;
-  max-height: 200px;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-pre,
-textarea {
-  font-size: 0.9em;
+.options-container {
+    margin-bottom: 1em;
 }

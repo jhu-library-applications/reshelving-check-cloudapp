@@ -1,56 +1,73 @@
-<div *ngIf="entities$ | async as entities">
-  <ng-container 
-    *ngIf="entities.length > 0; then entitylist; else noentities"
-  ></ng-container>
-  <ng-template #noentities>
-    <h1>Welcome!</h1>
-    <p>Use this sample app to get you started. The app includes the following:</p>
-    <ul>
-      <li>Listens on the <code>entities$</code> Observable</li>
-      <li>Performs an API call using the <code>restService</code> service</li>
-      <li>Updates the object using the <code>restService</code> service</li>
-      <li>Refreshes the page in Alma</li>
-    </ul>
-    <p>Use these building blocks to be on your way to developing your own Cloud App.</p>
-    <div class="highlight">Navigate to a page in Alma to view a list of entities.</div>
-  </ng-template>
-
-  <ng-template #entitylist>
-    <div class="eca-actions">
-      <button mat-flat-button color="secondary" (click)="clear()" [disabled]="!selectedEntity">Clear</button>
-      <button mat-flat-button color="primary" (click)="update(apiResultArea.value)"
-        [disabled]="!apiResult || loading">Update
-      </button>
+<div style="overflow: auto;">
+  <div class="actions">
+    <div class="loading-shade" *ngIf="loading">
+      <mat-spinner diameter="50"></mat-spinner>
+      <br>
     </div>
-    <h1>Entities</h1>
-    <mat-card [style.display]="apiResult ? '' : 'none'">
+    
+    <div class="item-rmst-match" *ngIf="itemRMSTMatch">
+      <h3>MATCH!!!</h3>
+    </div>
+    
+    <div class="options-container">
+      <mat-checkbox [(ngModel)]="locationCheck">Require LSC Item Location</mat-checkbox>
+    </div>
+
+    <div class="options-container">
+      <mat-checkbox [(ngModel)]="bigMoveMode">RBM Mode</mat-checkbox>
+    </div>
+      
+    <mat-form-field appearance="outline">
+      <mat-label>Item Barcode</mat-label>
+      <input #itemBarcode (keydown.enter)="onItemEnterPressed(itemBarcode.value, itemBarcode)" matInput
+        placeholder="Item Barcode">
+      <mat-icon matSuffix>document_scanner</mat-icon>
+      <mat-hint></mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>RMST Barcode</mat-label>
+      <input #rmstBarcode (keydown.enter)="onRMSTEnterPressed(rmstBarcode.value)" matInput placeholder="RMST Barcode">
+      <mat-icon matSuffix>document_scanner</mat-icon>
+      <mat-hint></mat-hint>
+    </mat-form-field>
+
+    <div class="buttons">
+      <div *ngIf="itemList.length > 0 || rmstBarcodeForItems">
+        <button mat-raised-button (click)="reset()">Reset</button>
+      </div>
+
+      <div *ngIf="itemList.length > 0 && rmstBarcodeForItems">
+
+        <button mat-raised-button color="primary" (click)="onSubmit()">Add RMST to Items</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngFor="let item of itemList.slice().reverse(); let i = index">
+    <mat-card>
       <mat-card-header>
-        <mat-card-title>API Result</mat-card-title>
+        <mat-card-title><h3><b>{{ i + 1}}.</b> {{ item.bib_data.title }}</h3></mat-card-title>
+        <span class="mat-spacer"></span>
+        <button class="remove-button" mat-icon-button aria-label="Remove" (click)="removeItem(item)">
+          <mat-icon>close</mat-icon>
+        </button>
       </mat-card-header>
       <mat-card-content>
-        <textarea #apiResultArea [value]="apiResult | json"></textarea>
+        <mat-list>
+          <mat-list-item>Barcode: {{ item.item_data.barcode }} </mat-list-item>
+          <mat-list-item>MMS: {{ item.bib_data.mms_id }} </mat-list-item>
+          <div *ngIf="item.item_data.storage_location_id">
+            <mat-list-item>RMST: {{ item.item_data.storage_location_id }} </mat-list-item>
+          </div>
+          <mat-list-item>Call Number: {{ item.holding_data.call_number }} </mat-list-item>
+        </mat-list>
       </mat-card-content>
     </mat-card>
-    <mat-card [style.display]="selectedEntity ? '' : 'none'">
-      <mat-card-header>
-        <mat-card-title>Selected Entity</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <pre>{{selectedEntity | json}}</pre>
-      </mat-card-content>
-    </mat-card>  
-    <label id="entities-radio-group-label">Select an entity:</label>
-    <mat-radio-group
-      aria-labelledby="entities-radio-group-label"
-      class="entities-radio-group"
-      [(ngModel)]="selectedEntity"
-      (change)="entitySelected($event)">
-      <mat-radio-button *ngFor="let entity of entities" [value]="entity">
-        {{entity.description}}
-      </mat-radio-button>
-    </mat-radio-group>
-  </ng-template>
-</div>
-<div class="loading-shade" *ngIf="loading">
-  <mat-spinner diameter="50"></mat-spinner>
+    <br>
+  </div>
+
+
+
 </div>

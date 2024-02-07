@@ -1,1 +1,15 @@
-{ }
+{
+   "id": "reshelving-check-cloudapp",
+   "title": "Reshelving Check",
+   "subtitle": "Cloud App for checking a record against an rmst tray for reshelving",
+   "author": "JHU Library Applications Group",
+   "icon": {
+      "type": "font",
+      "value": "fa fa-list"
+   },
+   "contentSecurity": {
+      "sandbox": {
+         "modals": true
+      }
+   }
+}
