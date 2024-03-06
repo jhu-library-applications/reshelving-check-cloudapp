@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 import * as Tone from 'tone'
 import { LocationCode } from './location_code_mapping';
 import { ItemUpdate } from '../interfaces/item_update.interface';
+import { set } from 'lodash';
 
 @Component({
   selector: 'app-main',
@@ -45,25 +46,31 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   checkItem() {
-    if(this.itemRecord && this.itemRecord.item_data.storage_location_id === this.rmstBarcodeForItems) {
+    if(this.rmstBarcodeForItems && this.itemRecord && this.itemRecord.item_data.storage_location_id === this.rmstBarcodeForItems) {
       this.itemRMSTMatch = true;
+      this.playBeep("C4");
+      this.alert.success('The RMST barcode matches the item.');
       return;
-    } else {
+    } else if(this.rmstBarcodeForItems && this.itemRecord){
       this.playBeep("C3");
       this.alert.error('The RMST barcode does not match the item.');
     }
+    this.loading = false;
   }
 
-  onItemEnterPressed(itemBarcode: string, inputElement: HTMLInputElement) {
+  onItemEnterPressed(itemBarcode: string) {
     this.loading = true;
-    inputElement.value = '';
+    this.setItemRecord(itemBarcode);
+    this.checkItem();
+  }
+
+  setItemRecord(itemBarcode: string) {
     this.itemService.getItemByBarcode(itemBarcode).pipe(
       finalize(() => this.loading = false)
     ).subscribe(
       item => {
         const uniqueId = item.item_data.barcode;
         this.itemRecord = item;
-        this.checkItem();
       },
       error => {
         console.error(error);
@@ -73,15 +80,23 @@ export class MainComponent implements OnInit, OnDestroy {
     )
   }
 
-  onRMSTEnterPressed(rmstBarcode: string) {
+  setRMSTBarcodeForItems(rmstBarcode: string) {
     this.rmstBarcodeForItems = rmstBarcode;
+  }
+
+  onRMSTEnterPressed(rmstBarcode: string) {
+    this.loading = true;
+    this.setRMSTBarcodeForItems(rmstBarcode);   
     this.checkItem();
   }
 
-  onSubmit() {
+  submit(itemBarcode: string, rmstBarcode: string) {
     this.loading = true;
+    this.setItemRecord(itemBarcode);
+    this.setRMSTBarcodeForItems(rmstBarcode);
     this.checkItem();
   }
+
   reset(): void {
     this.itemRecord = undefined;
     this.rmstBarcodeForItems = undefined;

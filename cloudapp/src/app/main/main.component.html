@@ -4,14 +4,10 @@
       <mat-spinner diameter="50"></mat-spinner>
       <br>
     </div>
-    
-    <div class="item-rmst-match" *ngIf="itemRMSTMatch">
-      <h3>MATCH!!!</h3>
-    </div>
-      
+
     <mat-form-field appearance="outline">
       <mat-label>Item Barcode</mat-label>
-      <input #itemBarcode (keydown.enter)="onItemEnterPressed(itemBarcode.value, itemBarcode)" matInput
+      <input #itemBarcode (keydown.enter)="onItemEnterPressed(itemBarcode.value)" matInput
         placeholder="Item Barcode">
       <mat-icon matSuffix>document_scanner</mat-icon>
       <mat-hint></mat-hint>
@@ -25,7 +21,8 @@
     </mat-form-field>
 
     <div class="buttons">
-        <button mat-raised-button (click)="reset()">Reset</button>
+      <button mat-raised-button (click)="submit(itemBarcode.value, rmstBarcode.value)">Submit</button>
+      <button mat-raised-button (click)="reset()">Reset</button>
     </div>
 
   </div>
